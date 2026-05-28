@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSK 4 Sözlem Ekzamini</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F4EF;--dark:#1A1208;--red:#D94F2B;--gold:#C8872A;--green:#2E7D4F;
+  --card:#FFFFFF;--muted:#9A8F82;--border:#E8E0D5;--ink:#2C2318;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+/* HEADER */
+.header{background:var(--dark);padding:32px 20px 24px;position:relative;overflow:hidden;}
+.header::after{content:'考试';position:absolute;right:-10px;top:-8px;font-family:'Noto Sans SC',sans-serif;font-size:100px;color:rgba(255,255,255,.04);font-weight:700;pointer-events:none;}
+.h-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.h-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:white;line-height:1.1;}
+.h-title span{color:var(--gold);}
+.h-badge{background:rgba(200,135,42,.15);border:1px solid rgba(200,135,42,.3);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--gold);font-weight:500;letter-spacing:.5px;}
+.score-row{display:flex;gap:16px;}
+.sc-item{text-align:center;}
+.sc-num{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:white;}
+.sc-lbl{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.5px;margin-top:1px;}
+
+/* PROGRESS BAR */
+.pbar-wrap{background:rgba(255,255,255,.08);height:4px;margin:16px 20px 0;}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--gold));transition:width .5s ease;}
+
+/* MAIN */
+.main{padding:20px 16px 100px;}
+
+/* QUESTION CARD */
+.qcard{background:var(--card);border-radius:20px;padding:24px;margin-bottom:16px;border:1px solid var(--border);box-shadow:0 2px 16px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+.qcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold));}
+.q-label{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;font-weight:500;}
+.q-word{font-family:'Noto Sans SC',sans-serif;font-size:48px;font-weight:700;color:var(--dark);line-height:1;margin-bottom:6px;text-align:center;}
+.q-pinyin{font-size:16px;color:var(--gold);text-align:center;margin-bottom:4px;font-style:italic;}
+.q-meaning{font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px;}
+.q-type{display:inline-block;background:rgba(217,79,43,.08);border:1px solid rgba(217,79,43,.15);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--red);margin:0 auto 20px;display:block;width:fit-content;margin:0 auto 20px;}
+
+/* INPUT AREA */
+.input-area{position:relative;}
+.answer-input{width:100%;background:#F9F6F2;border:2px solid var(--border);border-radius:14px;padding:14px 16px;font-size:16px;color:var(--ink);font-family:'Noto Sans SC',sans-serif;resize:none;outline:none;transition:border-color .2s;min-height:80px;line-height:1.5;}
+.answer-input:focus{border-color:var(--red);}
+.answer-input::placeholder{color:#C5BBB0;font-family:'DM Sans',sans-serif;font-size:14px;}
+.char-hint{font-size:11px;color:var(--muted);margin-top:6px;text-align:right;}
+
+/* SUBMIT BTN */
+.submit-btn{width:100%;background:var(--dark);color:white;border:none;border-radius:14px;padding:16px;font-size:15px;font-weight:600;font-family:'Syne',sans-serif;cursor:pointer;margin-top:14px;transition:transform .15s,opacity .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.submit-btn:active{transform:scale(.97);opacity:.9;}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed;}
+.submit-btn.loading{background:#555;}
+
+/* FEEDBACK CARD */
+.feedback{background:var(--card);border-radius:16px;padding:18px;margin-bottom:16px;border:2px solid var(--border);display:none;animation:slideUp .3s ease;}
+.feedback.show{display:block;}
+.feedback.correct{border-color:var(--green);background:rgba(46,125,79,.04);}
+.feedback.partial{border-color:var(--gold);background:rgba(200,135,42,.04);}
+.feedback.wrong{border-color:var(--red);background:rgba(217,79,43,.04);}
+.fb-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.fb-icon{font-size:24px;}
+.fb-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;}
+.fb-score{margin-left:auto;font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+.feedback.correct .fb-score{color:var(--green);}
+.feedback.partial .fb-score{color:var(--gold);}
+.feedback.wrong .fb-score{color:var(--red);}
+.fb-text{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:10px;}
+.fb-example{background:#F3EFE9;border-radius:10px;padding:12px;margin-top:10px;}
+.fb-ex-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.fb-ex-zh{font-family:'Noto Sans SC',sans-serif;font-size:15px;color:var(--dark);margin-bottom:3px;}
+.fb-ex-en{font-size:12px;color:var(--muted);}
+
+/* NEXT BTN */
+.next-btn{width:100%;background:linear-gradient(135deg,var(--red),var(--gold));color:white;border:none;border-radius:14px;padding:16px;font-size:15px;font-weight:600;font-family:'Syne',sans-serif;cursor:pointer;transition:transform .15s,opacity .15s;display:none;}
+.next-btn.show{display:block;}
+.next-btn:active{transform:scale(.97);}
+
+/* LESSON SELECTOR */
+.lesson-sel{background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid var(--border);}
+.ls-title{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.ls-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.ls-btn{padding:8px 4px;border-radius:10px;border:1.5px solid var(--border);background:white;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;text-align:center;transition:all .15s;font-family:'Syne',sans-serif;}
+.ls-btn.active{background:var(--dark);color:white;border-color:var(--dark);}
+.ls-btn:active{transform:scale(.94);}
+
+/* RESULT SCREEN */
+.result-screen{display:none;text-align:center;padding:40px 20px;}
+.result-screen.show{display:block;}
+.result-big{font-family:'Syne',sans-serif;font-size:72px;font-weight:800;line-height:1;margin-bottom:8px;}
+.result-sub{font-size:16px;color:var(--muted);margin-bottom:32px;}
+.result-grade{display:inline-block;padding:8px 24px;border-radius:30px;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:24px;}
+.result-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
+.rs{background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);}
+.rs-n{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+.rs-l{font-size:11px;color:var(--muted);margin-top:2px;}
+.restart-btn{width:100%;background:var(--dark);color:white;border:none;border-radius:14px;padding:16px;font-size:15px;font-weight:600;font-family:'Syne',sans-serif;cursor:pointer;}
+
+/* LOADING DOTS */
+.dots{display:inline-flex;gap:4px;align-items:center;}
+.dots span{width:6px;height:6px;border-radius:50%;background:white;animation:dot .8s infinite;}
+.dots span:nth-child(2){animation-delay:.2s;}
+.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes dot{0%,80%,100%{opacity:.2;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="h-top">
+    <div class="h-title">HSK <span>4</span><br>Ekzamin</div>
+    <div class="h-badge">🖊 Sözlem Döret</div>
+  </div>
+  <div class="score-row">
+    <div class="sc-item"><div class="sc-num" id="h-score">0</div><div class="sc-lbl">BAL</div></div>
+    <div class="sc-item"><div class="sc-num" id="h-correct">0</div><div class="sc-lbl">DOGRY</div></div>
+    <div class="sc-item"><div class="sc-num" id="h-q">0/10</div><div class="sc-lbl">SORAG</div></div>
+  </div>
+  <div class="pbar-wrap"><div class="pbar-fill" id="pbar" style="width:0%"></div></div>
+</div>
+
+<div class="main" id="main-area">
+
+  <!-- LESSON SELECTOR -->
+  <div class="lesson-sel">
+    <div class="ls-title">Sapak saýla</div>
+    <div class="ls-grid" id="ls-grid"></div>
+  </div>
+
+  <!-- QUESTION CARD -->
+  <div class="qcard" id="qcard" style="display:none;">
+    <div class="q-label" id="q-num">Sorag 1 / 10</div>
+    <div class="q-word" id="q-word">法律</div>
+    <div class="q-pinyin" id="q-pinyin">fǎlǜ</div>
+    <div class="q-meaning" id="q-meaning">law</div>
+    <div class="q-type" id="q-type">n.</div>
+
+    <div class="input-area">
+      <textarea class="answer-input" id="answer-input" placeholder="Bu sözi ulanyp hytaýça sözlem ýaz..." rows="3"></textarea>
+      <div class="char-hint" id="char-hint">Bu sözi sözlemde ullanmaly</div>
+    </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitAnswer()">
+      AI Baha Bersin 🤖
+    </button>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div class="feedback" id="feedback">
+    <div class="fb-header">
+      <div class="fb-icon" id="fb-icon">✅</div>
+      <div class="fb-title" id="fb-title">Gowy!</div>
+      <div class="fb-score" id="fb-score">+10</div>
+    </div>
+    <div class="fb-text" id="fb-text"></div>
+    <div class="fb-example" id="fb-example" style="display:none;">
+      <div class="fb-ex-lbl">Nusga Sözlem</div>
+      <div class="fb-ex-zh" id="fb-ex-zh"></div>
+      <div class="fb-ex-en" id="fb-ex-en"></div>
+    </div>
+  </div>
+
+  <button class="next-btn" id="next-btn" onclick="nextQuestion()">
+    Indiki Sorag →
+  </button>
+
+  <!-- RESULT -->
+  <div class="result-screen" id="result-screen">
+    <div class="result-big" id="r-score">85</div>
+    <div class="result-sub">bal / 100</div>
+    <div class="result-grade" id="r-grade">🥇 Ajaýyp!</div>
+    <div class="result-stats">
+      <div class="rs"><div class="rs-n" id="r-correct" style="color:var(--green)">8</div><div class="rs-l">Dogry Sözlem</div></div>
+      <div class="rs"><div class="rs-n" id="r-wrong" style="color:var(--red)">2</div><div class="rs-l">Ýalňyş</div></div>
+      <div class="rs"><div class="rs-n" id="r-avg" style="color:var(--gold)">8.5</div><div class="rs-l">Ortalama Bal</div></div>
+      <div class="rs"><div class="rs-n" id="r-lesson" style="color:var(--dark)">3</div><div class="rs-l">Sapak №</div></div>
+    </div>
+    <button class="restart-btn" onclick="restart()">🔄 Täzeden Başla</button>
+  </div>
+</div>
+
+<script>
+const LESSONS = [
+  {num:1, zh:"简单的爱情", words:[
+    {zh:"法律",py:"fǎlǜ",en:"law",type:"n."},
+    {zh:"俩",py:"liǎ",en:"two, both",type:"num."},
+    {zh:"印象",py:"yìnxiàng",en:"impression",type:"n."},
+    {zh:"深",py:"shēn",en:"deep",type:"adj."},
+    {zh:"熟悉",py:"shúxi",en:"to be familiar with",type:"v."},
+    {zh:"不仅",py:"bùjǐn",en:"not only",type:"conj."},
+    {zh:"性格",py:"xìnggé",en:"character, personality",type:"n."},
+    {zh:"从来",py:"cónglái",en:"always, all along",type:"adv."},
+    {zh:"共同",py:"gòngtóng",en:"common, shared",type:"adj."},
+    {zh:"幸福",py:"xìngfú",en:"happy",type:"adj."},
+  ]},
+  {num:2, zh:"真正的朋友", words:[
+    {zh:"正好",py:"zhènghǎo",en:"just right",type:"adv."},
+    {zh:"差不多",py:"chàbuduō",en:"almost",type:"adv."},
+    {zh:"却",py:"què",en:"but, yet",type:"adv."},
+    {zh:"而",py:"ér",en:"while, yet",type:"conj."},
+    {zh:"重新",py:"chóngxīn",en:"again, once more",type:"adv."},
+    {zh:"短信",py:"duǎnxìn",en:"text message",type:"n."},
+    {zh:"联系",py:"liánxi",en:"to contact",type:"v."},
+    {zh:"关系",py:"guānxi",en:"relationship",type:"n."},
+    {zh:"及时",py:"jíshí",en:"in time, timely",type:"adv."},
+    {zh:"真正",py:"zhēnzhèng",en:"true, genuine",type:"adj."},
+  ]},
+  {num:3, zh:"经理对我印象不错", words:[
+    {zh:"挺",py:"tǐng",en:"quite, very",type:"adv."},
+    {zh:"本来",py:"běnlái",en:"originally",type:"adv."},
+    {zh:"另外",py:"lìngwài",en:"in addition",type:"conj."},
+    {zh:"首先",py:"shǒuxiān",en:"first of all",type:"adv."},
+    {zh:"其次",py:"qícì",en:"secondly",type:"adv."},
+    {zh:"材料",py:"cáiliào",en:"material, data",type:"n."},
+    {zh:"诚实",py:"chéngshí",en:"honest",type:"adj."},
+    {zh:"成功",py:"chénggōng",en:"successful",type:"adj."},
+    {zh:"办法",py:"bànfǎ",en:"method, way",type:"n."},
+    {zh:"印象",py:"yìnxiàng",en:"impression",type:"n."},
+  ]},
+  {num:4, zh:"不要太着急赚钱", words:[
+    {zh:"以为",py:"yǐwéi",en:"to think wrongly",type:"v."},
+    {zh:"原来",py:"yuánlái",en:"as it turns out",type:"adv."},
+    {zh:"按照",py:"ànzhào",en:"according to",type:"prep."},
+    {zh:"甚至",py:"shènzhì",en:"even, so much so",type:"adv."},
+    {zh:"调查",py:"diàochá",en:"to investigate",type:"v."},
+    {zh:"成为",py:"chéngwéi",en:"to become",type:"v."},
+    {zh:"压力",py:"yālì",en:"pressure",type:"n."},
+    {zh:"工资",py:"gōngzī",en:"salary",type:"n."},
+    {zh:"着急",py:"zháojí",en:"to be anxious",type:"v."},
+    {zh:"赚钱",py:"zhuàn qián",en:"to make money",type:"v."},
+  ]},
+  {num:5, zh:"只买对的，不买贵的", words:[
+    {zh:"肯定",py:"kěndìng",en:"certainly, definitely",type:"adv."},
+    {zh:"实际",py:"shíjì",en:"practical, actual",type:"adj."},
+    {zh:"尤其",py:"yóuqí",en:"especially",type:"adv."},
+    {zh:"打折",py:"dǎ zhé",en:"to give a discount",type:"v."},
+    {zh:"超过",py:"chāoguò",en:"to exceed",type:"v."},
+    {zh:"标准",py:"biāozhǔn",en:"standard",type:"n."},
+    {zh:"准时",py:"zhǔnshí",en:"on time",type:"adv."},
+    {zh:"准备",py:"zhǔnbèi",en:"to prepare",type:"v."},
+    {zh:"便宜",py:"piányí",en:"cheap, inexpensive",type:"adj."},
+    {zh:"价格",py:"jiàgé",en:"price",type:"n."},
+  ]},
+  {num:6, zh:"一分钱一分货", words:[
+    {zh:"竟然",py:"jìngrán",en:"unexpectedly",type:"adv."},
+    {zh:"值得",py:"zhídé",en:"to be worth",type:"v."},
+    {zh:"其实",py:"qíshí",en:"actually, in fact",type:"adv."},
+    {zh:"其他",py:"qítā",en:"other, else",type:"pron."},
+    {zh:"生气",py:"shēngqì",en:"to get angry",type:"v."},
+    {zh:"空气",py:"kōngqì",en:"air",type:"n."},
+    {zh:"质量",py:"zhìliàng",en:"quality",type:"n."},
+    {zh:"价钱",py:"jiàqián",en:"price",type:"n."},
+    {zh:"便宜",py:"piányí",en:"cheap",type:"adj."},
+    {zh:"顾客",py:"gùkè",en:"customer",type:"n."},
+  ]},
+  {num:7, zh:"最好的医生是自己", words:[
+    {zh:"估计",py:"gūjì",en:"to estimate",type:"v."},
+    {zh:"来不及",py:"láibují",en:"no time left",type:"v."},
+    {zh:"要是",py:"yàoshi",en:"if, in case",type:"conj."},
+    {zh:"大夫",py:"dàifu",en:"doctor",type:"n."},
+    {zh:"出现",py:"chūxiàn",en:"to appear",type:"v."},
+    {zh:"窗户",py:"chuānghù",en:"window",type:"n."},
+    {zh:"动作",py:"dòngzuò",en:"action, movement",type:"n."},
+    {zh:"健康",py:"jiànkāng",en:"healthy, health",type:"adj./n."},
+    {zh:"锻炼",py:"duànliàn",en:"to exercise",type:"v."},
+    {zh:"习惯",py:"xíguàn",en:"habit; to be used to",type:"n./v."},
+  ]},
+  {num:8, zh:"生活中不缺少美", words:[
+    {zh:"使",py:"shǐ",en:"to make, to cause",type:"v."},
+    {zh:"只要",py:"zhǐyào",en:"as long as",type:"conj."},
+    {zh:"因此",py:"yīncǐ",en:"therefore",type:"conj."},
+    {zh:"往往",py:"wǎngwǎng",en:"often",type:"adv."},
+    {zh:"大使馆",py:"dàshǐguǎn",en:"embassy",type:"n."},
+    {zh:"到处",py:"dàochù",en:"everywhere",type:"adv."},
+    {zh:"堵车",py:"dǔ chē",en:"traffic jam",type:"v."},
+    {zh:"重要",py:"zhòngyào",en:"important",type:"adj."},
+    {zh:"生活",py:"shēnghuó",en:"life, to live",type:"n./v."},
+    {zh:"美丽",py:"měilì",en:"beautiful",type:"adj."},
+  ]},
+  {num:9, zh:"阳光总在风雨后", words:[
+    {zh:"难道",py:"nándào",en:"do you mean to say",type:"adv."},
+    {zh:"通过",py:"tōngguò",en:"by means of, through",type:"prep."},
+    {zh:"可是",py:"kěshì",en:"but, however",type:"conj."},
+    {zh:"结果",py:"jiéguǒ",en:"result; as a result",type:"n./conj."},
+    {zh:"得",py:"děi",en:"must, have to",type:"mod."},
+    {zh:"当时",py:"dāngshí",en:"at that time",type:"n."},
+    {zh:"打扰",py:"dǎrǎo",en:"to disturb",type:"v."},
+    {zh:"坚持",py:"jiānchí",en:"to persist, to stick to",type:"v."},
+    {zh:"困难",py:"kùnnán",en:"difficulty, difficult",type:"n./adj."},
+    {zh:"努力",py:"nǔlì",en:"to work hard",type:"v./adj."},
+  ]},
+  {num:10, zh:"幸福的标准", words:[
+    {zh:"不过",py:"búguò",en:"but; only",type:"conj./adv."},
+    {zh:"确实",py:"quèshí",en:"indeed, really",type:"adv."},
+    {zh:"由于",py:"yóuyú",en:"due to, because of",type:"prep."},
+    {zh:"比如",py:"bǐrú",en:"for example",type:"conj."},
+    {zh:"经济",py:"jīngjì",en:"economy, economic",type:"n./adj."},
+    {zh:"经验",py:"jīngyàn",en:"experience",type:"n."},
+    {zh:"经历",py:"jīnglì",en:"experience (lived through)",type:"n./v."},
+    {zh:"幸福",py:"xìngfú",en:"happiness, happy",type:"n./adj."},
+    {zh:"标准",py:"biāozhǔn",en:"standard, criterion",type:"n."},
+    {zh:"满足",py:"mǎnzú",en:"to satisfy, satisfied",type:"v./adj."},
+  ]}
+];
+
+// STATE
+let selectedLesson = 1;
+let questions = [];
+let currentQ = 0;
+let score = 0;
+let correctCount = 0;
+let answered = false;
+let scores = [];
+
+// RENDER LESSON SELECTOR
+function renderLessonSel(){
+  const g = document.getElementById('ls-grid');
+  g.innerHTML = LESSONS.map(l =>
+    `<button class="ls-btn ${l.num===selectedLesson?'active':''}" onclick="selectLesson(${l.num})">${l.num}</button>`
+  ).join('');
+}
+
+function selectLesson(num){
+  selectedLesson = num;
+  renderLessonSel();
+  startExam();
+}
+
+function startExam(){
+  const lesson = LESSONS.find(l => l.num === selectedLesson);
+  // Shuffle & pick 10
+  const shuffled = [...lesson.words].sort(()=>Math.random()-.5);
+  questions = shuffled.slice(0, Math.min(10, shuffled.length));
+  currentQ = 0; score = 0; correctCount = 0; answered = false; scores = [];
+  document.getElementById('qcard').style.display = 'block';
+  document.getElementById('result-screen').classList.remove('show');
+  document.getElementById('feedback').classList.remove('show','correct','partial','wrong');
+  document.getElementById('next-btn').classList.remove('show');
+  showQuestion();
+  updateHeader();
+}
+
+function showQuestion(){
+  if(currentQ >= questions.length){ showResult(); return; }
+  const w = questions[currentQ];
+  document.getElementById('q-num').textContent = `Sorag ${currentQ+1} / ${questions.length}`;
+  document.getElementById('q-word').textContent = w.zh;
+  document.getElementById('q-pinyin').textContent = w.py;
+  document.getElementById('q-meaning').textContent = w.en;
+  document.getElementById('q-type').textContent = w.type;
+  document.getElementById('answer-input').value = '';
+  document.getElementById('answer-input').disabled = false;
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('submit-btn').className = 'submit-btn';
+  document.getElementById('submit-btn').innerHTML = 'AI Baha Bersin 🤖';
+  document.getElementById('feedback').classList.remove('show','correct','partial','wrong');
+  document.getElementById('next-btn').classList.remove('show');
+  document.getElementById('fb-example').style.display = 'none';
+  answered = false;
+  updateHeader();
+}
+
+function updateHeader(){
+  document.getElementById('h-score').textContent = score;
+  document.getElementById('h-correct').textContent = correctCount;
+  document.getElementById('h-q').textContent = `${currentQ}/${questions.length}`;
+  document.getElementById('pbar').style.width = (currentQ/questions.length*100)+'%';
+}
+
+async function submitAnswer(){
+  if(answered) return;
+  const ans = document.getElementById('answer-input').value.trim();
+  if(!ans){ alert('Sözlem ýaz!'); return; }
+  const w = questions[currentQ];
+
+  // Loading state
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('submit-btn').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  document.getElementById('submit-btn').className = 'submit-btn loading';
+  document.getElementById('answer-input').disabled = true;
+
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 500,
+        messages: [{
+          role: "user",
+          content: `You are an HSK 4 Chinese teacher grading a student's sentence.
+
+The student was given the word: "${w.zh}" (${w.py}) meaning "${w.en}" (${w.type})
+
+The student wrote this sentence in Chinese: "${ans}"
+
+Please grade this sentence from 0-10 and give brief feedback in Turkmen language (Türkmen dili).
+
+Respond ONLY in this exact JSON format (no markdown):
+{
+  "score": <number 0-10>,
+  "level": "correct" or "partial" or "wrong",
+  "feedback_tk": "<brief feedback in Turkmen, 1-2 sentences>",
+  "example_zh": "<a good example sentence using the word>",
+  "example_en": "<English translation of your example>"
+}`
+        }]
+      })
+    });
+    const data = await resp.json();
+    const raw = data.content.map(c=>c.text||'').join('');
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const result = JSON.parse(clean);
+
+    // Show feedback
+    answered = true;
+    const qScore = Math.round(result.score * 10);
+    score += qScore;
+    if(result.level === 'correct') correctCount++;
+    scores.push(qScore);
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show ' + result.level;
+
+    const icons = {correct:'✅', partial:'⚡', wrong:'❌'};
+    const titles = {correct:'Dogry!', partial:'Ýarym dogry', wrong:'Gaýtadan synap gör'};
+    document.getElementById('fb-icon').textContent = icons[result.level];
+    document.getElementById('fb-title').textContent = titles[result.level];
+    document.getElementById('fb-score').textContent = '+'+qScore;
+    document.getElementById('fb-text').textContent = result.feedback_tk;
+
+    if(result.example_zh){
+      document.getElementById('fb-example').style.display = 'block';
+      document.getElementById('fb-ex-zh').textContent = result.example_zh;
+      document.getElementById('fb-ex-en').textContent = result.example_en;
+    }
+
+    document.getElementById('next-btn').classList.add('show');
+    document.getElementById('next-btn').textContent = currentQ+1 >= questions.length ? '📊 Netijeleri Gör' : 'Indiki Sorag →';
+    updateHeader();
+
+  } catch(e) {
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').className = 'submit-btn';
+    document.getElementById('submit-btn').innerHTML = 'AI Baha Bersin 🤖';
+    document.getElementById('answer-input').disabled = false;
+    alert('Ýalňyşlyk boldy, täzeden synap gör.');
+  }
+}
+
+function nextQuestion(){
+  currentQ++;
+  showQuestion();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showResult(){
+  document.getElementById('qcard').style.display = 'none';
+  document.getElementById('feedback').classList.remove('show');
+  document.getElementById('next-btn').classList.remove('show');
+
+  const rs = document.getElementById('result-screen');
+  rs.classList.add('show');
+
+  const total = questions.length * 100;
+  const pct = Math.round(score / total * 100);
+  document.getElementById('r-score').textContent = pct;
+
+  const grade = pct>=90?'🥇 Ajaýyp!' : pct>=75?'🥈 Gowy!' : pct>=60?'🥉 Orta' : '📚 Has köp öwren';
+  const gradeColor = pct>=90?'var(--green)' : pct>=75?'var(--gold)' : pct>=60?'var(--dark)' : 'var(--red)';
+  const g = document.getElementById('r-grade');
+  g.textContent = grade;
+  g.style.background = gradeColor+'22';
+  g.style.color = gradeColor;
+  g.style.border = `1.5px solid ${gradeColor}44`;
+
+  document.getElementById('r-correct').textContent = correctCount;
+  document.getElementById('r-wrong').textContent = questions.length - correctCount;
+  const avg = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : 0;
+  document.getElementById('r-avg').textContent = avg;
+  document.getElementById('r-lesson').textContent = selectedLesson;
+
+  document.getElementById('pbar').style.width = '100%';
+  document.getElementById('h-score').textContent = score;
+}
+
+function restart(){
+  startExam();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// INIT
+renderLessonSel();
+startExam();
+</script>
+</body>
+</html>
