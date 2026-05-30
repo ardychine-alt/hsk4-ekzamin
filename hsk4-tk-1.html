@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSK 4 · Türkmen Sözlük</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{--bg:#080810;--s1:#0E0E1A;--s2:#13131F;--s3:#1A1A2E;--p:#A78BFA;--p2:#7C3AED;--g:#34D399;--y:#FCD34D;--b:#60A5FA;--t:#FFFFFF;--t2:#E2E8F0;--m:#94A3B8;--br:rgba(167,139,250,.12);}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--t);font-family:'Outfit',sans-serif;display:flex;flex-direction:column;}
+.hdr{flex-shrink:0;padding:16px 18px 12px;background:rgba(8,8,16,.97);backdrop-filter:blur(24px);border-bottom:1px solid var(--br);z-index:10;}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.hdr-logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--p2),var(--p));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans SC',sans-serif;font-size:16px;font-weight:900;color:white;box-shadow:0 0 20px rgba(124,58,237,.4);}
+.logo-text{font-size:18px;font-weight:800;color:var(--t);}
+.logo-text span{background:linear-gradient(90deg,var(--p),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hdr-stats{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--br);border-radius:20px;padding:6px 12px;}
+.hdr-stat-n{font-size:15px;font-weight:700;color:var(--p);}
+.hdr-stat-l{font-size:11px;color:var(--m);}
+.hdr-divider{width:1px;height:16px;background:var(--br);}
+.search-box{position:relative;}
+.search-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--m);font-size:14px;pointer-events:none;}
+.search-in{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:10px 14px 10px 38px;font-size:14px;font-weight:500;color:var(--t);font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s;}
+.search-in:focus{border-color:rgba(167,139,250,.4);box-shadow:0 0 0 3px rgba(167,139,250,.08);}
+.search-in::placeholder{color:var(--m);}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 18px 2px;flex-shrink:0;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{flex-shrink:0;padding:5px 13px;border-radius:20px;border:1px solid var(--br);background:transparent;color:var(--m);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;white-space:nowrap;}
+.chip.on{background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4);color:var(--p);}
+.prog-wrap{padding:0 18px 10px;flex-shrink:0;}
+.prog-bg{height:3px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--p2),var(--p),var(--b));border-radius:2px;transition:width .6s;box-shadow:0 0 8px rgba(167,139,250,.5);}
+.scroll{flex:1;overflow-y:auto;padding:12px 18px 120px;scrollbar-width:thin;scrollbar-color:var(--s3) transparent;}
+.scroll::-webkit-scrollbar{width:4px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px;}
+.lesson-grp{margin-bottom:8px;}
+.lesson-btn{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;font-family:'Outfit',sans-serif;transition:border-color .15s;}
+.lesson-btn.open{border-color:rgba(167,139,250,.25);background:rgba(167,139,250,.05);border-radius:14px 14px 0 0;}
+.ln-num{width:32px;height:32px;background:linear-gradient(135deg,var(--p2),var(--p));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;}
+.ln-info{flex:1;}
+.ln-zh{font-family:'Noto Sans SC',sans-serif;font-size:15px;font-weight:700;color:var(--t);margin-bottom:2px;}
+.ln-tk{font-size:12px;color:var(--m);}
+.ln-right{display:flex;align-items:center;gap:8px;}
+.ln-prog{font-size:11px;color:var(--p);font-weight:600;}
+.ln-arrow{font-size:12px;color:var(--m);transition:transform .2s;}
+.lesson-btn.open .ln-arrow{transform:rotate(180deg);}
+.words-list{background:var(--s1);border:1px solid var(--br);border-top:none;border-radius:0 0 14px 14px;overflow:hidden;display:none;margin-bottom:8px;}
+.words-list.open{display:block;}
+.word-row{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;transition:background .15s;}
+.word-row:active{background:rgba(255,255,255,.04);}
+.word-row.learned{background:rgba(52,211,153,.04);}
+.wr-zh{font-family:'Noto Sans SC',sans-serif;font-size:28px;font-weight:700;flex-shrink:0;min-width:56px;line-height:1;color:var(--t);transition:color .2s;}
+.word-row.learned .wr-zh{color:var(--g);}
+.wr-mid{flex:1;}
+.wr-py{font-size:13px;color:#FCD34D;font-weight:600;margin-bottom:4px;letter-spacing:.3px;display:block;}
+.wr-tk{font-size:15px;font-weight:700;color:var(--t);line-height:1.3;margin-bottom:3px;}
+.wr-type{font-size:11px;color:var(--m);}
+.mark-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--m);transition:all .15s;flex-shrink:0;}
+.mark-btn.on{background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.5);color:var(--g);}
+.ex-row{display:none;padding:12px 16px 14px 16px;background:rgba(167,139,250,.05);border-top:1px solid rgba(167,139,250,.1);}
+.ex-row.open{display:block;}
+.ex-bar{width:24px;height:2px;background:linear-gradient(90deg,var(--p),var(--b));border-radius:1px;margin-bottom:8px;}
+.ex-zh{font-family:'Noto Sans SC',sans-serif;font-size:15px;color:var(--t);margin-bottom:4px;line-height:1.5;}
+.ex-py{font-size:12px;color:var(--p);font-style:italic;margin-bottom:4px;line-height:1.5;}
+.ex-tk{font-size:13px;color:var(--m);line-height:1.4;}
+.empty{text-align:center;padding:60px 20px;color:var(--m);}
+.empty-zh{font-family:'Noto Sans SC',sans-serif;font-size:40px;margin-bottom:10px;opacity:.15;}
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-10px);background:var(--s3);border:1px solid var(--br);color:var(--t);padding:9px 18px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:999;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,16,.98);backdrop-filter:blur(24px);border-top:1px solid var(--br);padding:10px 0 24px;display:flex;z-index:50;}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;font-size:9px;font-weight:600;color:var(--m);letter-spacing:.5px;text-transform:uppercase;}
+.bn-item.on{color:var(--p);}
+.bn-ico{font-size:19px;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.word-row{animation:fadeIn .2s ease both;}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="hdr-logo">
+      <div class="logo-icon">汉</div>
+      <div class="logo-text">HSK<span>4</span></div>
+    </div>
+    <div class="hdr-stats">
+      <div><div class="hdr-stat-n" id="h-learned">0</div><div class="hdr-stat-l">öwrenildi</div></div>
+      <div class="hdr-divider"></div>
+      <div><div class="hdr-stat-n" id="h-total">0</div><div class="hdr-stat-l">jemi söz</div></div>
+    </div>
+  </div>
+  <div class="search-box">
+    <span class="search-ico">🔍</span>
+    <input class="search-in" id="search" placeholder="Söz gözle... hytaýça ýa türkmençe" oninput="doSearch()">
+  </div>
+</div>
+<div class="chips" id="chips"><button class="chip on" onclick="selectLesson(0,this)">Hemmesi</button></div>
+<div class="prog-wrap"><div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div></div>
+<div class="scroll" id="scroll-area"></div>
+<div class="toast" id="toast"></div>
+<div class="bnav">
+  <div class="bn-item on"><div class="bn-ico">📚</div>Sözlük</div>
+  <div class="bn-item" onclick="showStats()"><div class="bn-ico">📊</div>Ösüş</div>
+  <div class="bn-item" onclick="resetAll()"><div class="bn-ico">🔄</div>Täzele</div>
+</div>
+<script>
+const L=[
+  {n:1,zh:"简单的爱情",tk:"Sada söýgi",w:[
+    {zh:"法律",py:"fǎlǜ",tk:"kanun",t:"at sözi",ez:"她学习法律。",ep:"Tā xuéxí fǎlǜ.",et:"Ol kanun öwrenýär."},
+    {zh:"俩",py:"liǎ",tk:"ikisi, ikiňiz",t:"san",ez:"我们俩是好朋友。",ep:"Wǒmen liǎ shì hǎo péngyou.",et:"Biziň ikimiz gowy dostlar."},
+    {zh:"印象",py:"yìnxiàng",tk:"täsir, pikir",t:"at sözi",ez:"他给我留下了好印象。",ep:"Tā gěi wǒ liúxià le hǎo yìnxiàng.",et:"Ol mende gowy täsir galdyrdy."},
+    {zh:"深",py:"shēn",tk:"çuňňur, güýçli",t:"sypat",ez:"这条河很深。",ep:"Zhè tiáo hé hěn shēn.",et:"Bu derýa gaty çuňňur."},
+    {zh:"熟悉",py:"shúxi",tk:"tanyş bolmak",t:"işlik",ez:"我熟悉这个城市。",ep:"Wǒ shúxi zhège chéngshì.",et:"Men bu şäheri tanaýaryn."},
+    {zh:"不仅",py:"bùjǐn",tk:"diňe däl",t:"baglanyşyk",ez:"他不仅会说汉语，还会说英语。",ep:"Tā bùjǐn huì shuō Hànyǔ, hái huì shuō Yīngyǔ.",et:"Ol diňe hytaýça däl, iňlisçe hem gürleýär."},
+    {zh:"性格",py:"xìnggé",tk:"häsiýet, şahsyýet",t:"at sözi",ez:"她的性格很好。",ep:"Tā de xìnggé hěn hǎo.",et:"Onuň häsiýeti gaty gowy."},
+    {zh:"从来",py:"cónglái",tk:"hiç haçan / hemişe",t:"hal sözi",ez:"我从来不抽烟。",ep:"Wǒ cónglái bù chōuyān.",et:"Men hiç haçan çilim çekmerin."},
+    {zh:"共同",py:"gòngtóng",tk:"bilelikde, umumy",t:"sypat",ez:"我们有共同的爱好。",ep:"Wǒmen yǒu gòngtóng de àihào.",et:"Biziň umumy gyzyklanmalarymyz bar."},
+    {zh:"幸福",py:"xìngfú",tk:"bagt, bagtly",t:"sypat",ez:"我们生活得很幸福。",ep:"Wǒmen shēnghuó de hěn xìngfú.",et:"Biz bagtly ýaşaýarys."},
+  ]},
+  {n:2,zh:"真正的朋友",tk:"Hakyky dost",w:[
+    {zh:"正好",py:"zhènghǎo",tk:"bap wagtynda",t:"hal sözi",ez:"你来得正好！",ep:"Nǐ lái de zhènghǎo!",et:"Sen bap wagtynda geldiň!"},
+    {zh:"差不多",py:"chàbuduō",tk:"takmynan, diýen ýaly",t:"hal sözi",ez:"差不多到了。",ep:"Chàbuduō dào le.",et:"Biz takmynan ýetdik."},
+    {zh:"却",py:"què",tk:"ýöne, emma",t:"hal sözi",ez:"他很努力，却没有成功。",ep:"Tā hěn nǔlì, què méiyǒu chénggōng.",et:"Ol zähmet çekdi, ýöne başarmady."},
+    {zh:"而",py:"ér",tk:"emma, bolsa",t:"baglanyşyk",ez:"他喜欢运动，而我喜欢音乐。",ep:"Tā xǐhuān yùndòng, ér wǒ xǐhuān yīnyuè.",et:"Ol sport halaýar, men bolsa aýdym."},
+    {zh:"重新",py:"chóngxīn",tk:"täzeden, gaýtadan",t:"hal sözi",ez:"我重新开始学习。",ep:"Wǒ chóngxīn kāishǐ xuéxí.",et:"Men täzeden öwrenip başladym."},
+    {zh:"短信",py:"duǎnxìn",tk:"gysga habar, SMS",t:"at sözi",ez:"她给我发了一条短信。",ep:"Tā gěi wǒ fā le yì tiáo duǎnxìn.",et:"Ol maňa bir SMS iberdi."},
+    {zh:"联系",py:"liánxi",tk:"habarlaşmak",t:"işlik",ez:"请跟我联系。",ep:"Qǐng gēn wǒ liánxi.",et:"Meniň bilen habarlaşyň."},
+    {zh:"关系",py:"guānxi",tk:"gatnaşyk, baglanyşyk",t:"at sözi",ez:"我们的关系很好。",ep:"Wǒmen de guānxi hěn hǎo.",et:"Biziň gatnaşygymyz gowy."},
+    {zh:"及时",py:"jíshí",tk:"wagtynda",t:"hal sözi",ez:"你要及时完成作业。",ep:"Nǐ yào jíshí wánchéng zuòyè.",et:"Öý işiňi wagtynda ýerine ýetirmeli."},
+    {zh:"真正",py:"zhēnzhèng",tk:"hakyky, çyn",t:"sypat",ez:"他是我真正的朋友。",ep:"Tā shì wǒ zhēnzhèng de péngyou.",et:"Ol meniň hakyky dostumdyr."},
+  ]},
+  {n:3,zh:"经理对我印象不错",tk:"Müdiriň pikirim gowy",w:[
+    {zh:"挺",py:"tǐng",tk:"gaty, örän",t:"hal sözi",ez:"这个电影挺好看的。",ep:"Zhège diànyǐng tǐng hǎokàn de.",et:"Bu film gaty gyzykly."},
+    {zh:"本来",py:"běnlái",tk:"aslyýetinde",t:"hal sözi",ez:"我本来想去，但是太忙了。",ep:"Wǒ běnlái xiǎng qù, dànshì tài máng le.",et:"Aslyýetinde gitjekdim, ýöne işlidim."},
+    {zh:"另外",py:"lìngwài",tk:"mundan başga, başga-da",t:"baglanyşyk",ez:"另外，我还有一个问题。",ep:"Lìngwài, wǒ hái yǒu yí ge wèntí.",et:"Mundan başga, ýene bir soragym bar."},
+    {zh:"首先",py:"shǒuxiān",tk:"ilki bilen",t:"hal sözi",ez:"首先，我要感谢大家。",ep:"Shǒuxiān, wǒ yào gǎnxiè dàjiā.",et:"Ilki bilen, hemmäňize sagbol."},
+    {zh:"其次",py:"qícì",tk:"ikinjiden",t:"hal sözi",ez:"其次，我们要努力学习。",ep:"Qícì, wǒmen yào nǔlì xuéxí.",et:"Ikinjiden, gaty köp okamaly."},
+    {zh:"材料",py:"cáiliào",tk:"maglumat, material",t:"at sözi",ez:"请准备好材料。",ep:"Qǐng zhǔnbèi hǎo cáiliào.",et:"Maglumatlary taýýarlaň."},
+    {zh:"诚实",py:"chéngshí",tk:"dogruçyl",t:"sypat",ez:"他是一个诚实的人。",ep:"Tā shì yí ge chéngshí de rén.",et:"Ol dogruçyl adamdyr."},
+    {zh:"成功",py:"chénggōng",tk:"üstünlik, başarmak",t:"işlik",ez:"祝你成功！",ep:"Zhù nǐ chénggōng!",et:"Üstünlik arzuw edýärin!"},
+    {zh:"办法",py:"bànfǎ",tk:"ýol, çözgüt",t:"at sözi",ez:"我们要想办法解决这个问题。",ep:"Wǒmen yào xiǎng bànfǎ jiějué zhège wèntí.",et:"Bu meseläni çözmek üçin ýol tapmalydyrys."},
+    {zh:"印象",py:"yìnxiàng",tk:"täsir",t:"at sözi",ez:"他给经理留下了好印象。",ep:"Tā gěi jīnglǐ liúxià le hǎo yìnxiàng.",et:"Ol müdirde gowy täsir galdyrdy."},
+  ]},
+  {n:4,zh:"不要太着急赚钱",tk:"Pul gazanmaga howlukma",w:[
+    {zh:"以为",py:"yǐwéi",tk:"ýalňyş pikir etmek",t:"işlik",ez:"我以为他不来了。",ep:"Wǒ yǐwéi tā bù lái le.",et:"Men onuň gelmeýändigini pikir etdim."},
+    {zh:"原来",py:"yuánlái",tk:"ine, aslynda",t:"hal sözi",ez:"原来你在这里！",ep:"Yuánlái nǐ zài zhèlǐ!",et:"Ine, sen şu ýerde eken!"},
+    {zh:"按照",py:"ànzhào",tk:"laýyklykda, görä",t:"çäklik",ez:"请按照说明书操作。",ep:"Qǐng ànzhào shuōmíngshū cāozuò.",et:"Görkezmä laýyklykda işläň."},
+    {zh:"甚至",py:"shènzhì",tk:"hatda",t:"hal sözi",ez:"他甚至不知道我的名字。",ep:"Tā shènzhì bù zhīdào wǒ de míngzi.",et:"Hatda ol meniň adymy bilenok."},
+    {zh:"调查",py:"diàochá",tk:"derňemek, barlamak",t:"işlik",ez:"警察正在调查这件事。",ep:"Jǐngchá zhèngzài diàochá zhè jiàn shì.",et:"Polisiýa bu işi derňeýär."},
+    {zh:"成为",py:"chéngwéi",tk:"bolmak, öwrülmek",t:"işlik",ez:"他想成为一名医生。",ep:"Tā xiǎng chéngwéi yì míng yīshēng.",et:"Ol lukman bolmak isleýär."},
+    {zh:"压力",py:"yālì",tk:"stres, basyş",t:"at sözi",ez:"工作压力很大。",ep:"Gōngzuò yālì hěn dà.",et:"Iş stresi güýçli."},
+    {zh:"工资",py:"gōngzī",tk:"aýlyk, iş haky",t:"at sözi",ez:"他的工资很高。",ep:"Tā de gōngzī hěn gāo.",et:"Onuň aýlygy ýokary."},
+    {zh:"着急",py:"zháojí",tk:"howul etmek",t:"işlik",ez:"别着急，慢慢来。",ep:"Bié zháojí, màn màn lái.",et:"Howul etme, ýuwaş-ýuwaş."},
+    {zh:"赚钱",py:"zhuàn qián",tk:"pul gazanmak",t:"işlik",ez:"他努力工作赚钱。",ep:"Tā nǔlì gōngzuò zhuàn qián.",et:"Ol pul gazanmak üçin zähmet çekýär."},
+  ]},
+  {n:5,zh:"只买对的，不买贵的",tk:"Dogrusyny al, gymmasyny däl",w:[
+    {zh:"肯定",py:"kěndìng",tk:"hökman, şübhesiz",t:"hal sözi",ez:"他肯定会来的。",ep:"Tā kěndìng huì lái de.",et:"Ol hökman geler."},
+    {zh:"实际",py:"shíjì",tk:"hakyky, amaly",t:"sypat",ez:"你要实际一点。",ep:"Nǐ yào shíjì yìdiǎn.",et:"Hakykata ýakyn bol."},
+    {zh:"尤其",py:"yóuqí",tk:"esasan, aýratyn",t:"hal sözi",ez:"我喜欢水果，尤其是苹果。",ep:"Wǒ xǐhuān shuǐguǒ, yóuqí shì píngguǒ.",et:"Men miweleri halaýaryn, esasan alma."},
+    {zh:"打折",py:"dǎ zhé",tk:"arzanlatmak, skidka",t:"işlik",ez:"这件衣服打折卖。",ep:"Zhè jiàn yīfu dǎzhé mài.",et:"Bu eşik arzanladylyp satylýar."},
+    {zh:"超过",py:"chāoguò",tk:"geçmek, aşmak",t:"işlik",ez:"他的成绩超过了我。",ep:"Tā de chéngjì chāoguò le wǒ.",et:"Onuň netijeleri meniňkiden geçdi."},
+    {zh:"标准",py:"biāozhǔn",tk:"standart, ölçeg",t:"at sözi",ez:"这不符合标准。",ep:"Zhè bù fúhé biāozhǔn.",et:"Bu standarta laýyk gelenok."},
+    {zh:"准时",py:"zhǔnshí",tk:"wagtynda, takyk",t:"hal sözi",ez:"请准时到达。",ep:"Qǐng zhǔnshí dàodá.",et:"Wagtynda gelin."},
+    {zh:"准备",py:"zhǔnbèi",tk:"taýýarlanmak",t:"işlik",ez:"我在准备考试。",ep:"Wǒ zài zhǔnbèi kǎoshì.",et:"Men synaga taýýarlanýaryn."},
+    {zh:"便宜",py:"piányí",tk:"arzan",t:"sypat",ez:"这里的东西很便宜。",ep:"Zhèlǐ de dōngxi hěn piányí.",et:"Bärdäki zatlar arzan."},
+    {zh:"价格",py:"jiàgé",tk:"baha, nyrh",t:"at sözi",ez:"这个价格太贵了。",ep:"Zhège jiàgé tài guì le.",et:"Bu baha gaty gymmat."},
+  ]},
+  {n:6,zh:"一分钱一分货",tk:"Nyrh — hiliň görkezijisi",w:[
+    {zh:"竟然",py:"jìngrán",tk:"garaşylmadyk, geň",t:"hal sözi",ez:"他竟然通过了考试！",ep:"Tā jìngrán tōngguò le kǎoshì!",et:"Ol garaşylmadyk synadan geçdi!"},
+    {zh:"值得",py:"zhídé",tk:"degmek, arzamak",t:"işlik",ez:"这本书值得一读。",ep:"Zhè běn shū zhídé yí dú.",et:"Bu kitap okamaga deger."},
+    {zh:"其实",py:"qíshí",tk:"aslynda, hakykatda",t:"hal sözi",ez:"其实我不喜欢这个。",ep:"Qíshí wǒ bù xǐhuān zhège.",et:"Aslynda men muny halamaýaryn."},
+    {zh:"其他",py:"qítā",tk:"başga, beýleki",t:"at çalyşmasy",ez:"其他同学都走了。",ep:"Qítā tóngxué dōu zǒu le.",et:"Beýleki okuwçylar gitdi."},
+    {zh:"生气",py:"shēngqì",tk:"gaharlanmak",t:"işlik",ez:"妈妈生气了。",ep:"Māma shēngqì le.",et:"Ejem gaharlandy."},
+    {zh:"空气",py:"kōngqì",tk:"howa",t:"at sözi",ez:"这里的空气很新鲜。",ep:"Zhèlǐ de kōngqì hěn xīnxiān.",et:"Bärdäki howa arassa."},
+    {zh:"质量",py:"zhìliàng",tk:"hil, hillilik",t:"at sözi",ez:"这个产品质量很好。",ep:"Zhège chǎnpǐn zhìliàng hěn hǎo.",et:"Bu önümiň hili gowy."},
+    {zh:"价钱",py:"jiàqián",tk:"baha",t:"at sözi",ez:"价钱合理。",ep:"Jiàqián hélǐ.",et:"Baha makul."},
+    {zh:"顾客",py:"gùkè",tk:"müşderi, alyjy",t:"at sözi",ez:"顾客永远是对的。",ep:"Gùkè yǒngyuǎn shì duì de.",et:"Müşderi hemişe dogrudyr."},
+    {zh:"倍",py:"bèi",tk:"esse, gezek",t:"san ölçegi",ez:"价格是原来的两倍。",ep:"Jiàgé shì yuánlái de liǎng bèi.",et:"Baha iki esse ýokary."},
+  ]},
+  {n:7,zh:"最好的医生是自己",tk:"Iň gowy lukman — özüňdir",w:[
+    {zh:"估计",py:"gūjì",tk:"çaklama, hasaplama",t:"işlik",ez:"我估计他不会来。",ep:"Wǒ gūjì tā bù huì lái.",et:"Men onuň gelmejegini çaklaýaryn."},
+    {zh:"来不及",py:"láibují",tk:"wagty ýok",t:"işlik",ez:"来不及了，快走吧！",ep:"Láibují le, kuài zǒu ba!",et:"Wagt ýok, çalt git!"},
+    {zh:"要是",py:"yàoshi",tk:"eger",t:"baglanyşyk",ez:"要是你来，我很高兴。",ep:"Yàoshi nǐ lái, wǒ hěn gāoxìng.",et:"Eger gelsen, begenerin."},
+    {zh:"大夫",py:"dàifu",tk:"lukman, tabyp",t:"at sözi",ez:"大夫说我需要休息。",ep:"Dàifu shuō wǒ xūyào xiūxi.",et:"Lukman dynç almalydygyny aýtdy."},
+    {zh:"出现",py:"chūxiàn",tk:"peýda bolmak",t:"işlik",ez:"问题出现了。",ep:"Wèntí chūxiàn le.",et:"Mesele ýüze çykdy."},
+    {zh:"窗户",py:"chuānghù",tk:"penjire",t:"at sözi",ez:"请关上窗户。",ep:"Qǐng guānshàng chuānghù.",et:"Penjiräni ýap."},
+    {zh:"动作",py:"dòngzuò",tk:"hereket",t:"at sözi",ez:"他的动作很快。",ep:"Tā de dòngzuò hěn kuài.",et:"Onuň hereketleri çalt."},
+    {zh:"健康",py:"jiànkāng",tk:"saglyk, sagdyn",t:"at sözi/sypat",ez:"健康比金钱更重要。",ep:"Jiànkāng bǐ jīnqián gèng zhòngyào.",et:"Saglyk puldan möhüm."},
+    {zh:"锻炼",py:"duànliàn",tk:"maşk etmek",t:"işlik",ez:"我每天锻炼一小时。",ep:"Wǒ měi tiān duànliàn yì xiǎoshí.",et:"Men her gün bir sagat maşk edýärin."},
+    {zh:"习惯",py:"xíguàn",tk:"endik",t:"at sözi/işlik",ez:"我有早起的习惯。",ep:"Wǒ yǒu zǎo qǐ de xíguàn.",et:"Mende ir turýan endik bar."},
+  ]},
+  {n:8,zh:"生活中不缺少美",tk:"Durmuşda owadanlyk köp",w:[
+    {zh:"使",py:"shǐ",tk:"etdirmek, sebäp bolmak",t:"işlik",ez:"音乐使我快乐。",ep:"Yīnyuè shǐ wǒ kuàilè.",et:"Saz meni şatlandyrýar."},
+    {zh:"只要",py:"zhǐyào",tk:"diňe gerek bolsa",t:"baglanyşyk",ez:"只要努力，就能成功。",ep:"Zhǐyào nǔlì, jiù néng chénggōng.",et:"Zähmet çekseň üstünlige ýetersiň."},
+    {zh:"因此",py:"yīncǐ",tk:"şonuň üçin",t:"baglanyşyk",ez:"他生病了，因此没来上课。",ep:"Tā shēngbìng le, yīncǐ méi lái shàngkè.",et:"Keselledi, şonuň üçin gelmedi."},
+    {zh:"往往",py:"wǎngwǎng",tk:"köplenç, adatça",t:"hal sözi",ez:"他往往工作到很晚。",ep:"Tā wǎngwǎng gōngzuò dào hěn wǎn.",et:"Ol köplenç giç işleýär."},
+    {zh:"大使馆",py:"dàshǐguǎn",tk:"ilçihana",t:"at sözi",ez:"我去大使馆办签证。",ep:"Wǒ qù dàshǐguǎn bàn qiānzhèng.",et:"Wiza almak üçin ilçihanä gitdim."},
+    {zh:"到处",py:"dàochù",tk:"her ýerde",t:"hal sözi",ez:"到处都是花。",ep:"Dàochù dōu shì huā.",et:"Her ýerde gül bar."},
+    {zh:"堵车",py:"dǔ chē",tk:"ulag dyknyşygy",t:"işlik",ez:"今天早上堵车了。",ep:"Jīntiān zǎoshang dǔchē le.",et:"Bu irden dyknyşyk boldy."},
+    {zh:"重要",py:"zhòngyào",tk:"möhüm, wajyp",t:"sypat",ez:"这件事很重要。",ep:"Zhè jiàn shì hěn zhòngyào.",et:"Bu iş möhüm."},
+    {zh:"生活",py:"shēnghuó",tk:"durmuş, ýaşamak",t:"at sözi",ez:"我喜欢我的生活。",ep:"Wǒ xǐhuān wǒ de shēnghuó.",et:"Men öz durmuşymy halaýaryn."},
+    {zh:"美丽",py:"měilì",tk:"owadan, gözel",t:"sypat",ez:"这里的风景很美丽。",ep:"Zhèlǐ de fēngjǐng hěn měilì.",et:"Bärdäki tebigat gözel."},
+  ]},
+  {n:9,zh:"阳光总在风雨后",tk:"Gün ýagyşdan soň çykar",w:[
+    {zh:"难道",py:"nándào",tk:"ýa nätdi, mümkün däl",t:"hal sözi",ez:"难道你不知道吗？",ep:"Nándào nǐ bù zhīdào ma?",et:"Sen hakykatdanam bilmeýärmiň?"},
+    {zh:"通过",py:"tōngguò",tk:"arkaly, geçmek",t:"çäklik/işlik",ez:"通过努力，他成功了。",ep:"Tōngguò nǔlì, tā chénggōng le.",et:"Zähmet arkaly üstünlik gazandy."},
+    {zh:"可是",py:"kěshì",tk:"ýöne, emma",t:"baglanyşyk",ez:"我想去，可是没有时间。",ep:"Wǒ xiǎng qù, kěshì méiyǒu shíjiān.",et:"Gitjekdim, ýöne wagt ýok."},
+    {zh:"结果",py:"jiéguǒ",tk:"netije, ahyrynda",t:"at sözi/baglanyşyk",ez:"考试结果出来了。",ep:"Kǎoshì jiéguǒ chūlái le.",et:"Synag netijeleri çykdy."},
+    {zh:"得",py:"děi",tk:"gerek, borçly",t:"kömekçi söz",ez:"你得好好休息。",ep:"Nǐ děi hǎohǎo xiūxi.",et:"Sen gowy dynç almaly."},
+    {zh:"当时",py:"dāngshí",tk:"şol wagtda",t:"at sözi",ez:"当时我不在家。",ep:"Dāngshí wǒ bú zài jiā.",et:"Şol wagt öýde ýokdum."},
+    {zh:"打扰",py:"dǎrǎo",tk:"bozuşmak",t:"işlik",ez:"对不起，打扰一下。",ep:"Duìbuqǐ, dǎrǎo yíxià.",et:"Bagyşlaň, birjik bozuşaýyn."},
+    {zh:"坚持",py:"jiānchí",tk:"dowam etdirmek",t:"işlik",ez:"你要坚持下去。",ep:"Nǐ yào jiānchí xiàqù.",et:"Dowam etmeli."},
+    {zh:"困难",py:"kùnnán",tk:"kynçylyk, kyn",t:"at sözi/sypat",ez:"遇到困难不要放弃。",ep:"Yùdào kùnnán bùyào fàngqì.",et:"Kynçylykda ýüz öwürme."},
+    {zh:"努力",py:"nǔlì",tk:"zähmet çekmek",t:"işlik/sypat",ez:"他非常努力。",ep:"Tā fēicháng nǔlì.",et:"Ol gaty köp zähmet çekýär."},
+  ]},
+  {n:10,zh:"幸福的标准",tk:"Bagtyň ölçegi",w:[
+    {zh:"不过",py:"búguò",tk:"ýöne, diňe, emma",t:"baglanyşyk",ez:"不过，这也不是坏事。",ep:"Búguò, zhè yě bú shì huài shì.",et:"Ýöne bu hem erbet zat däl."},
+    {zh:"确实",py:"quèshí",tk:"hakykatdanam",t:"hal sözi",ez:"他确实很聪明。",ep:"Tā quèshí hěn cōngming.",et:"Ol hakykatdanam akylly."},
+    {zh:"由于",py:"yóuyú",tk:"sebäpli, üçin",t:"çäklik",ez:"由于下雨，比赛取消了。",ep:"Yóuyú xià yǔ, bǐsài qǔxiāo le.",et:"Ýagyş sebäpli ýaryş ýatyryldy."},
+    {zh:"比如",py:"bǐrú",tk:"meselem, mysal üçin",t:"baglanyşyk",ez:"我喜欢运动，比如游泳。",ep:"Wǒ xǐhuān yùndòng, bǐrú yóuyǒng.",et:"Men sporty halaýaryn, meselem ýüzüşi."},
+    {zh:"经济",py:"jīngjì",tk:"ykdysadyýet, ykdysady",t:"at sözi/sypat",ez:"中国经济发展很快。",ep:"Zhōngguó jīngjì fāzhǎn hěn kuài.",et:"Hytaý ykdysadyýeti çalt ösýär."},
+    {zh:"经验",py:"jīngyàn",tk:"tejribe",t:"at sözi",ez:"他有很多工作经验。",ep:"Tā yǒu hěn duō gōngzuò jīngyàn.",et:"Onuň iş tejribesi köp."},
+    {zh:"经历",py:"jīnglì",tk:"başdan geçirmek",t:"at sözi/işlik",ez:"这是一次难忘的经历。",ep:"Zhè shì yí cì nánwàng de jīnglì.",et:"Bu ýatdan çykmajak başdan geçirme."},
+    {zh:"幸福",py:"xìngfú",tk:"bagt, bagtly",t:"at sözi/sypat",ez:"幸福的标准因人而异。",ep:"Xìngfú de biāozhǔn yīn rén ér yì.",et:"Bagtyň ölçegi adamdan adama üýtgeýär."},
+    {zh:"标准",py:"biāozhǔn",tk:"ölçeg, standart",t:"at sözi",ez:"你的标准太高了。",ep:"Nǐ de biāozhǔn tài gāo le.",et:"Seniň ölçegleriň ýokary."},
+    {zh:"满足",py:"mǎnzú",tk:"kanagatly, razylyk",t:"sypat/işlik",ez:"我对现在的生活很满足。",ep:"Wǒ duì xiànzài de shēnghuó hěn mǎnzú.",et:"Men häzirki durmuşymdan kanagat."},
+  ]}
+];
+
+let saved=JSON.parse(localStorage.getItem('hsk4-tk3')||'{}');
+let curLesson=0;
+const total=L.reduce((a,l)=>a+l.w.length,0);
+function save(){localStorage.setItem('hsk4-tk3',JSON.stringify(saved));}
+function learnedCnt(){return Object.keys(saved).filter(k=>saved[k]).length;}
+function updateUI(){
+  const cnt=learnedCnt();
+  document.getElementById('h-learned').textContent=cnt;
+  document.getElementById('h-total').textContent=total;
+  document.getElementById('prog').style.width=Math.round(cnt/total*100)+'%';
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+function lessonCnt(l){return l.w.filter(w=>saved[l.n+'-'+w.zh]).length;}
+function buildChips(){
+  const wrap=document.getElementById('chips');
+  L.forEach(l=>{
+    const b=document.createElement('button');
+    b.className='chip';b.dataset.n=l.n;
+    b.textContent=l.n+' · '+l.zh;
+    b.onclick=()=>selectLesson(l.n,b);
+    wrap.appendChild(b);
+  });
+}
+function selectLesson(num,el){
+  curLesson=num;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');render();
+}
+function doSearch(){render();}
+function render(){
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  const isSearching=q.length>0;
+  const area=document.getElementById('scroll-area');
+  area.innerHTML='';
+  const lessonsToShow=isSearching?L:(curLesson>0?L.filter(l=>l.n===curLesson):L);
+  let any=false;
+  lessonsToShow.forEach(l=>{
+    const ws=isSearching?l.w.filter(w=>w.zh.includes(q)||w.tk.toLowerCase().includes(q)||w.py.toLowerCase().includes(q)):l.w;
+    if(!ws.length) return;
+    any=true;
+    const cnt=lessonCnt(l);
+    const grp=document.createElement('div');
+    grp.className='lesson-grp';grp.id='grp-'+l.n;
+    const btn=document.createElement('button');
+    btn.className='lesson-btn'+(isSearching||curLesson>0?' open':'');
+    btn.innerHTML=`<div class="ln-num">${l.n}</div><div class="ln-info"><div class="ln-zh">${l.zh}</div><div class="ln-tk">${l.tk} · ${ws.length} söz</div></div><div class="ln-right"><span class="ln-prog" id="lp-${l.n}">${cnt}/${l.w.length}</span><span class="ln-arrow">▾</span></div>`;
+    const wlist=document.createElement('div');
+    wlist.className='words-list'+(isSearching||curLesson>0?' open':'');
+    btn.onclick=()=>{btn.classList.toggle('open');wlist.classList.toggle('open');};
+    ws.forEach((w,wi)=>{
+      const key=l.n+'-'+w.zh;
+      const isLearned=!!saved[key];
+      const exId='ex'+key.replace(/[^a-zA-Z0-9]/g,'_');
+      const row=document.createElement('div');
+      row.className='word-row'+(isLearned?' learned':'');
+      row.style.animationDelay=(wi*0.025)+'s';
+      row.innerHTML=`<div class="wr-zh">${w.zh}</div><div class="wr-mid"><div class="wr-py">${w.py}</div><div class="wr-tk">${w.tk}</div><div class="wr-type">${w.t}</div></div><div class="wr-right"><button class="mark-btn${isLearned?' on':''}" onclick="toggleLearn(event,'${key}',${l.n})">✓</button></div>`;
+      row.addEventListener('click',function(e){
+        if(e.target.closest('.mark-btn')) return;
+        document.getElementById(exId).classList.toggle('open');
+      });
+      const ex=document.createElement('div');
+      ex.className='ex-row';ex.id=exId;
+      ex.innerHTML=`<div class="ex-bar"></div><div class="ex-zh">${w.ez}</div><div class="ex-py">${w.ep}</div><div class="ex-tk">${w.et}</div>`;
+      wlist.appendChild(row);wlist.appendChild(ex);
+    });
+    grp.appendChild(btn);grp.appendChild(wlist);area.appendChild(grp);
+  });
+  if(!any) area.innerHTML=`<div class="empty"><div class="empty-zh">没有</div>Söz tapylmady</div>`;
+  updateUI();
+}
+function toggleLearn(e,key,lesNum){
+  e.stopPropagation();
+  saved[key]=!saved[key];save();
+  e.currentTarget.classList.toggle('on',saved[key]);
+  e.currentTarget.closest('.word-row').classList.toggle('learned',saved[key]);
+  showToast(saved[key]?'✓ Öwrenildi!':'Belligi aýryldy');
+  updateUI();
+  const l=L.find(x=>x.n===lesNum);
+  const lp=document.getElementById('lp-'+lesNum);
+  if(l&&lp) lp.textContent=lessonCnt(l)+'/'+l.w.length;
+}
+function showStats(){
+  const cnt=learnedCnt();
+  showToast(`📊 ${cnt}/${total} söz · ${Math.round(cnt/total*100)}% · ~${Math.ceil((total-cnt)/6)} gün`);
+}
+function resetAll(){
+  if(confirm('Ähli bellikleri öçürmek isleýärmiňmi?')){saved={};save();render();showToast('🔄 Täzelendi');}
+}
+buildChips();render();
+</script>
+</body>
+</html>
